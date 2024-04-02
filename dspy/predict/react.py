@@ -85,7 +85,11 @@ class ReAct(Module):
     def act(self, output, hop):
         try:
             action = output[f"Action_{hop+1}"]
-            action_name, action_val = action.strip().split("\n")[0].split("[", 1)
+            
+            # action_name, action_val = action.strip().split("\n")[0].split("[", 1)
+            # kwk [avoid truncating the output if it has multiple lines.]
+            action_name, action_val = action.strip().split("[", 1)
+            
             action_val = action_val.rsplit("]", 1)[0]
 
             if action_name == "Finish":
@@ -102,7 +106,9 @@ class ReAct(Module):
             output[f"Observation_{hop+1}"] = (
                 "Failed to parse action. Bad formatting or incorrect action name."
             )
-            raise e
+            
+            # kwk [instead of raising an error, give the error as an observation to LLMs]
+            # raise e
 
     def forward(self, **kwargs):
         args = {key: kwargs[key] for key in self.input_fields.keys() if key in kwargs}
