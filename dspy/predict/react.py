@@ -26,7 +26,9 @@ class ReAct(Module):
         inputs_ = ", ".join([f"`{k}`" for k in self.input_fields.keys()])
         outputs_ = ", ".join([f"`{k}`" for k in self.output_fields.keys()])
 
+        # kwk[Fix the issue where the react prompt not consider the signature.]
         instr = [
+            self.signature.instructions + "\n",
             f"You will be given {inputs_} and you will respond with {outputs_}.\n",
             "To do this, you will interleave Thought, Action, and Observation steps.\n",
             "Thought can reason about the current situation, and Action can be the following types:\n",
@@ -41,7 +43,8 @@ class ReAct(Module):
         for idx, tool in enumerate(self.tools):
             tool = self.tools[tool]
             instr.append(
-                f"({idx+1}) {tool.name}[{tool.input_variable}], which {tool.desc}",
+                # kwk[elaborate the tool description]
+                f"({idx+1}) {tool.name}[`{tool.input_variable}`] (note that at each time, you should put specific `{tool.input_variable}` inside the square bracket), which {tool.desc}",
             )
 
         instr = "\n".join(instr)
