@@ -110,6 +110,10 @@ class ReAct(Module):
         for hop in range(self.max_iters):
             # with dspy.settings.context(show_guidelines=(i <= 2)):
             output = self.react[hop](**args)
+            
+            # kwk [adding stop argument for generation, also check dspy.predict & dsp.primitives.predict]
+            output = self.react[hop](**args, stop=("\nObservation", "\nFinish"))
+            print(output)
 
             if action_val := self.act(output, hop):
                 break

@@ -83,6 +83,11 @@ class Predict(Parameter):
             config["temperature"] = 0.7
             # print(f"#> Setting temperature to 0.7 since n={num_generations} and prior temperature={temperature}.")
 
+        # kwk
+        stop_param = kwargs.get("stop", ())
+        if stop_param:
+            config["stop"] = stop_param
+            
         # All of the other kwargs are presumed to fit a prefix of the signature.
         # That is, they are input variables for the bottom most generation, so
         # we place them inside the input - x - together with the demos.

@@ -75,6 +75,18 @@ def _generate(template: Template, **kwargs) -> Callable:
         # Generate and extract the fields.
         prompt = template(example)
         completions: list[dict[str, Any]] = generator(prompt, **kwargs)
+        
+        # kwk [hacky way for now, can be moved to gpt.py but this works for all LMs]
+        # throw away the generated text after see the stop word (including the stop word)
+        # here mainly used for stop ReAct agent from generating its own observation before looking up the tools
+        completions_temp = []
+        for p in completions:            
+            for delimiter in kwargs.get("stop", ()):
+                p = p.split(delimiter)[0]
+            completions_temp.append(p)
+        completions = completions_temp
+        
+        
         completions: list[Example] = [template.extract(example, p) for p in completions]
 
         # Find the completions that are most complete.
