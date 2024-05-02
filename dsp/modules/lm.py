@@ -46,7 +46,7 @@ class LM(ABC):
             prompt = x["prompt"]
 
             if prompt != last_prompt:
-                if provider == "clarifai" or provider == "google":
+                if provider == "clarifai" or provider == "google" or provider == "groq" or provider == "Bedrock" or provider == "Sagemaker":
                     printed.append((prompt, x["response"]))
                 elif provider == "anthropic":
                     blocks = [{"text": block.text} for block in x["response"].content if block.type == "text"]
@@ -63,23 +63,23 @@ class LM(ABC):
             if len(printed) >= n:
                 break
 
+        printing_value = ""
         for idx, (prompt, choices) in enumerate(reversed(printed)):
-            printing_value = ""
-
             # skip the first `skip` prompts
             if (n - idx - 1) < skip:
                 continue
-
             printing_value += "\n\n\n"
             printing_value += prompt
 
             text = ""
-            if provider == "cohere":
+            if provider == "cohere" or provider == "Bedrock" or provider == "Sagemaker":
                 text = choices
             elif provider == "openai" or provider == "ollama":
-                text = " " + self._get_choice_text(choices[0]).strip()
-            elif provider == "clarifai":
-                text = choices
+                text = ' ' + self._get_choice_text(choices[0]).strip()
+            elif provider == "clarifai" or provider == "claude" :
+                text=choices
+            elif provider == "groq":
+                text = ' ' + choices
             elif provider == "google":
                 text = choices[0].parts[0].text
             elif provider == "mistral":

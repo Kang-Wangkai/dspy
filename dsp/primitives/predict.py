@@ -76,7 +76,7 @@ def _generate(template: Template, **kwargs) -> Callable:
         prompt = template(example)
         completions: list[dict[str, Any]] = generator(prompt, **kwargs)
         
-        # kwk [hacky way for now, can be moved to gpt.py but this works for all LMs]
+        # kwk [hacky way for now, can be replaced by just adding a `stop` argument for dspy.OpenAI call, but not sure if all other LMs handles the stop argument]
         # throw away the generated text after see the stop word (including the stop word)
         # here mainly used for stop ReAct agent from generating its own observation before looking up the tools
         completions_temp = []
