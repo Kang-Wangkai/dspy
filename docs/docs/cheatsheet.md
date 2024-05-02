@@ -177,7 +177,7 @@ print(f"Question: {question}")
 print(f"Final Predicted Answer (after ReAct process): {result.answer}")
 ```
 
-### dspy.Retreive
+### dspy.Retrieve
 
 ```python
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(url='http://20.102.90.50:2017/wiki17_abstracts')
@@ -233,7 +233,7 @@ class FactJudge(dspy.Signature):
     context = dspy.InputField(desc="Context for the prediciton")
     question = dspy.InputField(desc="Question to be answered")
     answer = dspy.InputField(desc="Answer for the question")
-    factually_correct = dspy.OutputField(desc="Is the answer factually correct based on the context?", prefix="Facual[Yes/No]:")
+    factually_correct = dspy.OutputField(desc="Is the answer factually correct based on the context?", prefix="Factual[Yes/No]:")
 
 judge = dspy.ChainOfThought(FactJudge)
 
@@ -356,29 +356,29 @@ for p in finetune_program.predictors():
     p.activated = False
 ```
 
-### dspy.SignatureOptimizer
+### dspy.COPRO
 
 ```python
-from dspy.teleprompt import SignatureOptimizer
+from dspy.teleprompt import COPRO
 
 eval_kwargs = dict(num_threads=16, display_progress=True, display_table=0)
 
-signature_optimizer_teleprompter = SignatureOptimizer(prompt_model=model_to_generate_prompts, task_model=model_that_solves_task, metric=your_defined_metric, breadth=num_new_prompts_generated, depth=times_to_generate_prompts, init_temperature=prompt_generation_temperature, verbose=False, log_dir=logging_directory)
+copro_teleprompter = COPRO(prompt_model=model_to_generate_prompts, task_model=model_that_solves_task, metric=your_defined_metric, breadth=num_new_prompts_generated, depth=times_to_generate_prompts, init_temperature=prompt_generation_temperature, verbose=False, log_dir=logging_directory)
 
-compiled_program_optimized_signature = signature_optimizer_teleprompter.compile(your_dspy_program.deepcopy(), devset=trainset, evalset=devset, eval_kwargs=eval_kwargs)
+compiled_program_optimized_signature = copro_teleprompter.compile(your_dspy_program, trainset=trainset, eval_kwargs=eval_kwargs)
 ```
 
-### dspy.BayesianSignatureOptimizer
+### dspy.MIPRO
 
 
 ```python
-from dspy.teleprompt import BayesianSignatureOptimizer
+from dspy.teleprompt import MIPRO
 
-teleprompter = BayesianSignatureOptimizer(prompt_model=model_to_generate_prompts, task_model=model_that_solves_task, metric=your_defined_metric, n=num_new_prompts_generated, init_temperature=prompt_generation_temperature)
+teleprompter = MIPRO(prompt_model=model_to_generate_prompts, task_model=model_that_solves_task, metric=your_defined_metric, num_candidates=num_new_prompts_generated, init_temperature=prompt_generation_temperature)
 
 kwargs = dict(num_threads=NUM_THREADS, display_progress=True, display_table=0)
 
-compiled_program_optimized_bayesian_signature = teleprompter.compile(your_dspy_program, devset=devset[:DEV_NUM], optuna_trials_num=100, max_bootstrapped_demos=3, max_labeled_demos=5, eval_kwargs=kwargs)
+compiled_program_optimized_bayesian_signature = teleprompter.compile(your_dspy_program, trainset=trainset, num_trials=100, max_bootstrapped_demos=3, max_labeled_demos=5, eval_kwargs=kwargs)
 ```
 
 ### Signature Optimizer with Types
