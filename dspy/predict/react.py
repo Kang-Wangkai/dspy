@@ -108,11 +108,7 @@ class ReAct(Module):
             output[f"Observation_{hop+1}"] = (
                 "Failed to parse action. Bad formatting or incorrect action name."
             )
-<<<<<<< HEAD
-            
             # kwk [instead of raising an error, give the error as an observation to LLMs]
-=======
->>>>>>> f354043527538258b00e973e997fee0c8e574232
             # raise e
 
     def forward(self, **kwargs):
